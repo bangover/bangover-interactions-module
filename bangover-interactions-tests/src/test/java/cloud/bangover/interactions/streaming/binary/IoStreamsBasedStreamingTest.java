@@ -1,6 +1,5 @@
 package cloud.bangover.interactions.streaming.binary;
 
-import cloud.bangover.async.promises.WaitingPromise;
 import cloud.bangover.errors.UnexpectedErrorException;
 import cloud.bangover.interactions.streaming.DirectStreamer;
 import cloud.bangover.interactions.streaming.Stream;
@@ -28,13 +27,13 @@ public class IoStreamsBasedStreamingTest {
     Streamer streamer = new DirectStreamer();
     Stream<BinaryChunk> stream = streamer.createStream(source, destination);
     // When
-    WaitingPromise.of(stream.start()).await();
+    stream.start().await();
     // Then
     Assert.assertEquals(DATA, new String(outputStream.toByteArray()));
   }
 
   @Test
-  public void shouldTranmitDataWithoutErrorsIfBufferSizeGreaterThenTransferringDataVolume() {
+  public void shouldTranmitDataWithoutErrorsIfBufferSizeGreaterThenTransferringDataVolume() throws Exception {
     // Given
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     BinarySource source = new InputStreamSource(new ByteArrayInputStream(DATA.getBytes()), 5000);
@@ -42,7 +41,7 @@ public class IoStreamsBasedStreamingTest {
     Streamer streamer = new DirectStreamer();
     Stream<BinaryChunk> stream = streamer.createStream(source, destination);
     // When
-    WaitingPromise.of(stream.start()).await();
+    stream.start().await();
     // Then
     Assert.assertEquals(DATA, new String(outputStream.toByteArray()));
   }
@@ -56,7 +55,7 @@ public class IoStreamsBasedStreamingTest {
     Streamer streamer = new DirectStreamer();
     Stream<BinaryChunk> stream = streamer.createStream(source, destination);
     // When
-    WaitingPromise.of(stream.start()).await();
+    stream.start().await();
     // Then
     Assert.assertEquals("", new String(outputStream.toByteArray()));
   }
