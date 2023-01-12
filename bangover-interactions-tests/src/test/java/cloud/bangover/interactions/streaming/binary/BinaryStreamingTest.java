@@ -3,7 +3,6 @@ package cloud.bangover.interactions.streaming.binary;
 import cloud.bangover.MockHistory;
 import cloud.bangover.async.promises.MockErrorHandler;
 import cloud.bangover.async.promises.MockResponseHandler;
-import cloud.bangover.async.promises.WaitingPromise;
 import cloud.bangover.interactions.streaming.DirectStreamer;
 import cloud.bangover.interactions.streaming.Stream;
 import cloud.bangover.interactions.streaming.Stream.Stat;
@@ -19,19 +18,19 @@ public class BinaryStreamingTest {
   private BinaryChunk SECOND_CHUNK = new BinaryChunk(new byte[] {4, 5, 6});
   
   @Test
-  public void shouldTransferDataFromSourceToDestination() {
+  public void shouldTransferDataFromSourceToDestination() throws Exception {
     // Given
     Streamer streamer = new DirectStreamer();
     MockBinarySource binarySource = new MockBinarySource();
     MockBinaryDestination binaryDestination = new MockBinaryDestination();
     MockResponseHandler<Stat> mockResponseHandler = new MockResponseHandler<Stat>();
-    MockErrorHandler<Throwable> mockErrorHandler = new MockErrorHandler<Throwable>();
+    MockErrorHandler<Exception> mockErrorHandler = new MockErrorHandler<>();
     Stream<BinaryChunk> stream = streamer.createStream(binarySource, binaryDestination);
     binarySource.configureChunksQueue()
       .withNextEntry(FIRST_CHUNK)
       .withNextEntry(SECOND_CHUNK);
     // When
-    WaitingPromise.of(stream.start())
+    stream.start()
       .then(mockResponseHandler)
       .error(mockErrorHandler)
       .await();
