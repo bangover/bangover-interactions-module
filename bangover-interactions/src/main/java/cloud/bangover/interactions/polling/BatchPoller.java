@@ -16,4 +16,8 @@ public interface BatchPoller<D> {
    * @return The polled piece of data
    */
   public Collection<D> poll();
+  
+  public interface Factory<D> {
+    BatchPoller<D> createBatchPoller();
+  }
 }

@@ -1,19 +1,17 @@
 package cloud.bangover.interactions.interactor;
 
 import cloud.bangover.async.promises.Promise;
-import cloud.bangover.async.timer.Timeout;
-import lombok.NonNull;
+import cloud.bangover.timer.Timeout;
 
 /**
- * This interface describes the contract for interaction mechanism betweeb components.
+ * This interface describes the contract for request-reply interaction mechanism between components.
  *
  * @author Dmitry Mikhaylenko
  * 
  * @param <Q> The request type name
  * @param <S> The reply type name
  */
-public interface Interactor<Q, S> {
-
+public interface RequestReplyInteractor<Q, S> {
   /**
    * Invoke a target point. The promise will be resolved if the called target point is handle
    * request and returned response. The promise will be rejected if an error is happened during data
@@ -23,36 +21,6 @@ public interface Interactor<Q, S> {
    * @return The result promise
    */
   public Promise<S> invoke(Q request);
-
-  /**
-   * This exception notifies about unsupported request type.
-   *
-   * @author Dmitry Mikhaylenko
-   *
-   */
-  public class WrongRequestTypeException extends RuntimeException {
-    private static final long serialVersionUID = -7913320375639849714L;
-
-    public WrongRequestTypeException(@NonNull Class<?> expectedType, @NonNull Object request) {
-      super(String.format("Request type %s isn't matched to the expected %s", request.getClass(),
-          expectedType));
-    }
-  }
-
-  /**
-   * This exception notifies about unsupported response type.
-   *
-   * @author Dmitry Mikhaylenko
-   *
-   */
-  public class WrongResponseTypeException extends RuntimeException {
-    private static final long serialVersionUID = 1708762115152750631L;
-
-    public WrongResponseTypeException(@NonNull Class<?> expectedType, @NonNull Object response) {
-      super(String.format("Response type %s isn't matched to the expected %s", response.getClass(),
-          expectedType));
-    }
-  }
 
   /**
    * This interface declares the contract of creating interactor, bound to the concrete target with
@@ -73,7 +41,7 @@ public interface Interactor<Q, S> {
      * @param timeout      The response waiting timeout
      * @return The created interactor
      */
-    public <Q, S> Interactor<Q, S> createInteractor(TargetAddress target, Class<Q> requestType,
+    public <Q, S> RequestReplyInteractor<Q, S> createInteractor(TargetAddress target, Class<Q> requestType,
         Class<S> responseType, Timeout timeout);
   }
 }

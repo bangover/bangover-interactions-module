@@ -20,7 +20,19 @@ public class Polling {
    * @return The {@link Iterable} data poller
    */
   public <D> Iterable<D> createPoller(BatchPoller<D> pollingFunction) {
-    Iterator<PolledElement<D>> indexedIterator = createIndexedPoller(pollingFunction).iterator();
+    return createPoller(() -> pollingFunction);
+  }
+  
+  /**
+   * Create data poller without data indexing. We will have only polled data flow without polling
+   * order indexes.
+   *
+   * @param <D>             The polling data type name
+   * @param pollingFunctionFactory The data polling function factory
+   * @return The {@link Iterable} data poller
+   */
+  public <D> Iterable<D> createPoller(BatchPoller.Factory<D> pollingFunctionFactory) {
+    Iterator<PolledElement<D>> indexedIterator = createIndexedPoller(pollingFunctionFactory.createBatchPoller()).iterator();
     return new Iterable<D>() {
       @Override
       public Iterator<D> iterator() {
@@ -53,6 +65,18 @@ public class Polling {
    * @return The {@link Iterable} data poller
    */
   public <D> Iterable<PolledElement<D>> createIndexedPoller(BatchPoller<D> pollingFunction) {
-    return new DataPoller<D>(pollingFunction);
+    return createIndexedPoller(() -> pollingFunction);
+  }
+  
+  /**
+   * Create data poller with data indexing. So we will have flow of {@link PolledElement} objects,
+   * containing as polled data item, as polling order position.
+   *
+   * @param <D>             The polling data type name
+   * @param pollingFunctionFactory The data polling function factory
+   * @return The {@link Iterable} data poller
+   */
+  public <D> Iterable<PolledElement<D>> createIndexedPoller(BatchPoller.Factory<D> pollingFunctionFactory) {
+    return new DataPoller<D>(pollingFunctionFactory.createBatchPoller());
   }
 }
